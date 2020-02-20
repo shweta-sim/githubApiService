@@ -9,21 +9,9 @@ const Search = props => {
     <div>
       <Form onSubmit={props.handleSubmit}>
         <Form.Group as={Row}>
-          <Form.Label column sm={2}>
-            User
-          </Form.Label>
-          <Col sm={10}>
-            <Form.Control
-              type='text'
-              placeholder='User'
-              onChange={e => props.setUser(e.target.value)}
-            />
-          </Col>
-        </Form.Group>
-
-        <Form.Group as={Row}>
-          <Form.Label column sm={2}>
-            Repository
+          <Form.Label column sm={12}>
+            Enter repo details in format &#x3c;username&#x3e; / &#x3c;repo
+            name&#x3e;
           </Form.Label>
           <Col sm={10}>
             <Form.Control
@@ -35,8 +23,8 @@ const Search = props => {
         </Form.Group>
 
         <Form.Group as={Row}>
-          <Form.Label column sm={2}>
-            Keyword
+          <Form.Label column sm={12}>
+            Enter Keyword
           </Form.Label>
           <Col sm={10}>
             <Form.Control
@@ -47,7 +35,7 @@ const Search = props => {
           </Col>
         </Form.Group>
         <Form.Group as={Row}>
-          <Col sm={{ span: 10, offset: 2 }}>
+          <Col sm={5}>
             <Button type='submit'>Sign in</Button>
           </Col>
         </Form.Group>
