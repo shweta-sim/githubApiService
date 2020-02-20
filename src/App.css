@@ -1,0 +1,12 @@
+body {
+  margin: 20px;
+  padding: 0;
+}
+.wrapper-form {
+  width: 60%;
+  flex-wrap: wrap;
+}
+.wrapper-grid {
+  width: 90%;
+  flex-wrap: wrap;
+}
