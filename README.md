@@ -1,1 +1,1 @@
-# React JS Web Service Utilizing GitHub Rest API V3 with Express Backend
+# ReactJS Web Service Using GitHub Rest API V3
