@@ -9,38 +9,43 @@ import Button from 'react-bootstrap/Button';
 import './App.css';
 
 const App = () => {
+  const [error, setError] = useState();
+  const [user, setUser] = useState();
+  const [results, setResults] = useState();
   const [repo, setRepo] = useState();
   const [keyword, setKeyword] = useState();
-  const [sort, setSort] = useState();
   const [count, setCount] = useState();
   const apiUrl = 'https://api.github.com/search/commits?q=';
 
+  const handleErrors = () => {
+    if (user === undefined || repo === undefined || keyword === undefined) {
+      return true;
+    }
+  };
   const handleSubmit = e => {
     e.preventDefault();
+    handleErrors();
+
     axios
-      .get(`${apiUrl}${keyword}`, {
+      .get(`${apiUrl}repo:${user}/${repo}+${keyword}`, {
         headers: { Accept: 'application/vnd.github.cloak-preview' }
       })
       .then(response => {
-        console.log(response.data.total_count);
+        console.log(response.data.items);
         setCount(response.data.total_count);
+        setResults(response.data.items);
+      })
+      .catch(err => {
+        setError('Please enter all valid values');
       });
-
-    // axios
-    //   .get(`${apiUrl}${keyword}`, {
-    //     headers: { Accept: 'application/vnd.github.cloak-preview' }
-    //   })
-    //   // .get('https://api.github.com/search/commits?q=changes+done', {
-    //   //   headers: { Accept: 'application/vnd.github.cloak-preview' }
-    //   // })
-    //   .then((response) => {
-    //     console.log(response.data);
   };
+
   return (
     <div>
       <div className='wrapper-form'>
+        <h4>Search by keyword or ticket ID to view all commits</h4>
         <Form onSubmit={handleSubmit}>
-          <Form.Group as={Row} controlId='formHorizontalEmail'>
+          <Form.Group as={Row}>
             <Form.Label column sm={2}>
               Repository
             </Form.Label>
@@ -53,7 +58,20 @@ const App = () => {
             </Col>
           </Form.Group>
 
-          <Form.Group as={Row} controlId='formHorizontalPassword'>
+          <Form.Group as={Row}>
+            <Form.Label column sm={2}>
+              User
+            </Form.Label>
+            <Col sm={10}>
+              <Form.Control
+                type='text'
+                placeholder='User'
+                onChange={e => setUser(e.target.value)}
+              />
+            </Col>
+          </Form.Group>
+
+          <Form.Group as={Row}>
             <Form.Label column sm={2}>
               Keyword
             </Form.Label>
@@ -65,63 +83,55 @@ const App = () => {
               />
             </Col>
           </Form.Group>
-          <fieldset>
-            <Form.Group as={Row}>
-              <Form.Label as='legend' column sm={2}>
-                Sort By
-              </Form.Label>
-              <Col sm={10}>
-                <Form.Check
-                  type='radio'
-                  label='first radio'
-                  name='formHorizontalRadios'
-                  id='formHorizontalRadios1'
-                />
-                <Form.Check
-                  type='radio'
-                  label='second radio'
-                  name='formHorizontalRadios'
-                  id='formHorizontalRadios2'
-                />
-                <Form.Check
-                  type='radio'
-                  label='third radio'
-                  name='formHorizontalRadios'
-                  id='formHorizontalRadios3'
-                />
-              </Col>
-            </Form.Group>
-          </fieldset>
-
           <Form.Group as={Row}>
             <Col sm={{ span: 10, offset: 2 }}>
               <Button type='submit'>Sign in</Button>
             </Col>
           </Form.Group>
         </Form>
+        <p className='error'>{error ? error : ''}</p>
       </div>
 
-      <div className='wrapper-grid'>
-        <p>Total Commits: {count}</p>
-        <Table striped bordered hover variant='light'>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>Username</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1</td>
-              <td>Mark</td>
-              <td>Otto</td>
-              <td>@mdo</td>
-            </tr>
-          </tbody>
-        </Table>
-      </div>
+      {results ? (
+        <div className='wrapper-grid'>
+          <p className='commits'>Total Commits: {count}</p>
+          <Table striped bordered hover variant='light'>
+            <thead>
+              <tr>
+                <th>Commit SHA</th>
+                <th>Author Name</th>
+                <th>Date</th>
+                <th>Repository</th>
+              </tr>
+            </thead>
+            <tbody>
+              {results.map((item, index) => (
+                <tr>
+                  <td key={index}>
+                    <a href={item.html_url} target='blank'>
+                      {item.commit.message}
+                    </a>
+                  </td>
+                  <td key={index}>
+                    {/* <a href={item.author.html_url} target='blank'> */}
+                    {item.commit.author.name}
+                    {/* </a> */}
+                  </td>
+
+                  <td key={index}>{item.commit.author.date}</td>
+                  <td key={index}>
+                    <a href={item.repository.html_url} target='blank'>
+                      {item.repository.name}
+                    </a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
+      ) : (
+        <div></div>
+      )}
     </div>
   );
 };
